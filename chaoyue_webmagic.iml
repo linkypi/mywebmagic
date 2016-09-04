@@ -30,15 +30,36 @@
       <src_folder value="file://F:/Projects/webmagic-0.5.2/src" expected_position="0" />
     </src_description>
   </component>
+  <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/src/config/applicationContext.xml</file>
+        </fileset>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://F:/Projects/webmagic-0.5.2/bin" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/lib" />
+    <content url="file://$MODULE_DIR$/lib">
+      <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/src">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
-    <orderEntry type="library" exported="" name="lib" level="project" />
+    <orderEntry type="library" name="Spring-4.3.1.RELEASE" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>

@@ -21,12 +21,4 @@ public class ImageDownloader extends HttpClientDownloader
 
         return super.getContent(charset, httpResponse);
     }
-
-//    @Override
-//    protected String getContent(String charset, HttpResponse httpResponse) throws IOException {
-//
-//        byte[] imageByte = EntityUtils.toByteArray(httpResponse.getEntity());
-//        String iageStr = ImageBase64Utils.GetImageStr(imageByte);
-//        return iageStr;
-//    }
 }

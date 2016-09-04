@@ -8,14 +8,11 @@ import com.alibaba.fastjson.TypeReference;
 import com.lynch.model.MultiplePrice;
 import com.lynch.model.Pagination;
 
-import redis.clients.jedis.BinaryClient;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
-
-import javax.print.DocFlavor;
 
 /**
  * @author code4crafter@gmail.com <br>
@@ -42,17 +39,18 @@ public class SinaBlogProcessor implements PageProcessor {
     public static void main(String[] args) {
     
         Spider.create(new SinaBlogProcessor())
-        .addUrl(SCHEMA+"://"+URL_CATEGORY)
-               // .addUrl("http://www.lessomall.com/medias/?context=bWFzdGVyfGltYWdlc3wxMDIwOTl8aW1hZ2UvanBlZ3xpbWFnZXMvaDJkL2hhNi84Nzk4Njk0OTY1Mjc4LmpwZ3w3ODc4NjAxNDg4Y2FkMmQ0ZDMwOWYzODhhNmRhNmNlOTM2OTc0YmFiODM4Mjc1YmI4ZmZmN2RkMDQzMTIzY2Ux")
+        //.addUrl(SCHEMA+"://"+URL_CATEGORY) //必须加上前缀http
+         .addUrl("http://www.lessomall.com/medias/?context=bWFzdGVyfGltYWdlc3wxMDIwOTl8aW1hZ2UvanBlZ3xpbWFnZXMvaDJkL2hhNi84Nzk4Njk0OTY1Mjc4LmpwZ3w3ODc4NjAxNDg4Y2FkMmQ0ZDMwOWYzODhhNmRhNmNlOTM2OTc0YmFiODM4Mjc1YmI4ZmZmN2RkMDQzMTIzY2Ux")
         .addPipeline(new MyPipeline()).addPipeline(new ConsolePipeline())
         .setDownloader(new ImageDownloader())
         .thread(1)
         .run();
+
     }
     
     @Override
     public void process(Page page) {
-    	
+    	String raw = page.getRawText();
         if (page.getUrl().regex(URL_CATEGORY).match())
         {
         	getAllCategory(page);
@@ -69,6 +67,7 @@ public class SinaBlogProcessor implements PageProcessor {
         {
             getProductDetail(page);
         }
+        
     }
 
     /**
@@ -80,6 +79,8 @@ public class SinaBlogProcessor implements PageProcessor {
         List<String> list = page.getHtml().$("div.productsPresentation div.detailedInformation p").all();
 
         System.out.println("detail:" + list );
+
+        getImageLinks(page);
     }
 
     private void getImageLinks(Page page)
