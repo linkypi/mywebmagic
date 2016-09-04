@@ -1,13 +1,18 @@
 package com.lynch.main;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 
+import com.lynch.dao.MultiplePriceDao;
 import com.lynch.model.MultiplePrice;
 import com.lynch.model.Pagination;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -37,7 +42,22 @@ public class SinaBlogProcessor implements PageProcessor {
     }
 
     public static void main(String[] args) {
-    
+
+        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:/config/applicationContext.xml");// 没有classpath表示当前目录
+
+        MultiplePriceDao dao = context.getBean(MultiplePriceDao.class);
+        try
+        {
+            dao.insert(new MultiplePrice(UUID.randomUUID().toString().replace("-",""),
+                    "234231","90","1200","40032",false,"customcode","lessmall"));
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+
+
         Spider.create(new SinaBlogProcessor())
         //.addUrl(SCHEMA+"://"+URL_CATEGORY) //必须加上前缀http
          .addUrl("http://www.lessomall.com/medias/?context=bWFzdGVyfGltYWdlc3wxMDIwOTl8aW1hZ2UvanBlZ3xpbWFnZXMvaDJkL2hhNi84Nzk4Njk0OTY1Mjc4LmpwZ3w3ODc4NjAxNDg4Y2FkMmQ0ZDMwOWYzODhhNmRhNmNlOTM2OTc0YmFiODM4Mjc1YmI4ZmZmN2RkMDQzMTIzY2Ux")

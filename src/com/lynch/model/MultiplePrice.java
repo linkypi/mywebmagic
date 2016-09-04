@@ -8,6 +8,19 @@ import com.alibaba.fastjson.annotation.JSONField;
  * @date: 2016/9/3/0003 20:29
  */
 public class MultiplePrice {
+    
+    public MultiplePrice(){}
+    public MultiplePrice(String id,String pcode,String price,String quantity,String provinceCode
+    ,Boolean anonymous,String customCode,String cusname){
+        this.id = id;
+        this.customerCode = customCode;
+        this.customerName = cusname;
+        this.productCode = pcode;
+        this.price = price;
+        this.quantity = quantity;
+        this.provinceCode = provinceCode;
+        this.isAnonymity = anonymous;
+    }
     private String id;
 
     public String getId(){
@@ -17,6 +30,7 @@ public class MultiplePrice {
        id = value;
     }
     private String productCode;
+
 
     public String getProductCode(){
        return productCode;
@@ -51,12 +65,12 @@ public class MultiplePrice {
     public void setQuantityStr(String value){
        quantityStr = value;
     }
-    private String isAnonymity;
+    private boolean isAnonymity;
 
-    public String getIsAnonymity(){
+    public boolean getIsAnonymity(){
        return isAnonymity;
     }
-    public void setIsAnonymity(String value){
+    public void setIsAnonymity(boolean value){
        isAnonymity = value;
     }
     private String metalMarket;

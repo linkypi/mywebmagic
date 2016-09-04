@@ -15,7 +15,13 @@
     <!--</environments>-->
 
     <mappers>
-        <mapper class="com.lynch.mapper.UserMapper"/>
+        <!-- 通过package元素将会把指定包下面的所有Mapper接口进行注册 -->
+        <package name="com.lynch.mapper"/>
+        <!-- 通过mapper元素的resource属性可以指定一个相对于类路径的Mapper.xml文件 -->
+        <!--<mapper resource="com/tiantian/mybatis/mapper/UserMapper.xml"/>-->
+        <!--<mapper class="com.lynch.mapper.MultiplePriceMapper"/>-->
+        <!-- 通过mapper元素的url属性可以指定一个通过URL请求道的Mapper.xml文件 -->
+        <!--<mapper url="file:///E:/UserMapper.xml"/>-->
     </mappers>
 </configuration>
 

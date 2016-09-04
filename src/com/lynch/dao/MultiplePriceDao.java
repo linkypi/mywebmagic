@@ -2,8 +2,11 @@ package com.lynch.dao;
 
 import com.lynch.mapper.MultiplePriceMapper;
 import com.lynch.model.MultiplePrice;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -12,14 +15,16 @@ import java.util.List;
  * @version: v1.0
  * @date: 2016/9/4/0004 11:25
  */
-public class MultiplePriceDao implements IAction<MultiplePrice> {
+@Component
+public class MultiplePriceDao implements IAction<MultiplePrice>,Serializable {
 
-    @Resource
+    @Autowired
     private MultiplePriceMapper mapper;
 
     @Override
-    public boolean insert(MultiplePrice person) {
-        return false;
+    public boolean insert(MultiplePrice model) throws Exception {
+        int count = mapper.insertUser(model);
+        return count>0;
     }
 
     @Override
