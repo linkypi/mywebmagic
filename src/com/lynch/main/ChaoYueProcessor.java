@@ -1,5 +1,6 @@
 package com.lynch.main;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,22 +8,35 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 
 import com.lynch.dao.MultiplePriceDao;
+import com.lynch.job.HelloQuartzJob;
 import com.lynch.model.MultiplePrice;
 import com.lynch.model.Pagination;
 
+import org.quartz.*;
+import static org.quartz.DateBuilder.evenMinuteDate;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.monitor.SpiderMonitor;
+import us.codecraft.webmagic.monitor.SpiderStatusMXBean;
 import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.selector.Selectable;
+
+import javax.management.JMException;
+
 
 /**
  * @author code4crafter@gmail.com <br>
  */
-public class SinaBlogProcessor implements PageProcessor {
+public class ChaoYueProcessor implements PageProcessor {
     private static final String DOMAIN =  "www.lessomall.com";
     private static final String SCHEMA =  "http";
     private static final String URL_CATEGORY = DOMAIN + "/rest/api/v1/home/categoryList";
@@ -33,7 +47,7 @@ public class SinaBlogProcessor implements PageProcessor {
     private Site site = Site.me()
             .setCharset("UTF-8")
             .setDomain(DOMAIN)
-            .setSleepTime(3000)
+            .setSleepTime(10*1000)
             .setUserAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36");
                    // "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
     @Override
@@ -41,53 +55,90 @@ public class SinaBlogProcessor implements PageProcessor {
         return site;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws BeansException, SchedulerException {
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:/config/applicationContext.xml");// 没有classpath表示当前目录
+        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        Scheduler sched = schedulerFactory.getScheduler();
 
-        MultiplePriceDao dao = context.getBean(MultiplePriceDao.class);
-        try
-        {
-            dao.insert(new MultiplePrice(UUID.randomUUID().toString().replace("-",""),
-                    "234231","90","1200","40032",false,"customcode","lessmall"));
-        }
-        catch(Exception ex)
-        {
-            ex.printStackTrace();
-        }
+        // computer a time that is on the next round minute
+        Date runTime = evenMinuteDate(new Date());
+        // define the job and tie it to our HelloJob class
+        JobDetail job = newJob(HelloQuartzJob.class).withIdentity("job1", "group1").build();
+
+        // Trigger the job to run on the next round minute
+        Trigger trigger = newTrigger().withIdentity("trigger1", "group1").startAt(runTime)
+                .withSchedule(simpleSchedule().withIntervalInSeconds(2).withRepeatCount(5)).build();
+
+        // Tell quartz to schedule the job using our trigger
+        sched.scheduleJob(job, trigger);
+
+        // scheduler has been started)
+        sched.start();
 
 
 
-        Spider.create(new SinaBlogProcessor())
-        //.addUrl(SCHEMA+"://"+URL_CATEGORY) //必须加上前缀http
-         .addUrl("http://www.lessomall.com/medias/?context=bWFzdGVyfGltYWdlc3wxMDIwOTl8aW1hZ2UvanBlZ3xpbWFnZXMvaDJkL2hhNi84Nzk4Njk0OTY1Mjc4LmpwZ3w3ODc4NjAxNDg4Y2FkMmQ0ZDMwOWYzODhhNmRhNmNlOTM2OTc0YmFiODM4Mjc1YmI4ZmZmN2RkMDQzMTIzY2Ux")
-        .addPipeline(new MyPipeline()).addPipeline(new ConsolePipeline())
-        .setDownloader(new ImageDownloader())
-        .thread(1)
-        .run();
 
+
+
+
+
+//        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:/config/applicationContext.xml");// 没有classpath表示当前目录
+//
+//        MultiplePriceDao dao = context.getBean(MultiplePriceDao.class);
+//        try
+//        {
+//            dao.insert(new MultiplePrice(UUID.randomUUID().toString().replace("-",""),
+//                    "234231","90","1200","40032",false,"customcode","lessmall"));
+//        }
+//        catch(Exception ex)
+//        {
+//            ex.printStackTrace();
+//        }
+
+//        SpiderMonitor spiderMonitor = new SpiderMonitor(){
+//            @Override
+//            protected SpiderStatusMXBean getSpiderStatusMBean(Spider spider, MonitorSpiderListener monitorSpiderListener) {
+//
+//                return new CustomSpiderStatus(spider, monitorSpiderListener);
+//            }
+//        };
+//
+//        Spider spider = Spider.create(new ChaoYueProcessor());
+//        spider.addUrl(SCHEMA+"://"+URL_CATEGORY) //必须加上前缀http
+//         //.addUrl("http://www.lessomall.com/medias/?context=bWFzdGVyfGltYWdlc3wxMDIwOTl8aW1hZ2UvanBlZ3xpbWFnZXMvaDJkL2hhNi84Nzk4Njk0OTY1Mjc4LmpwZ3w3ODc4NjAxNDg4Y2FkMmQ0ZDMwOWYzODhhNmRhNmNlOTM2OTc0YmFiODM4Mjc1YmI4ZmZmN2RkMDQzMTIzY2Ux")
+//        .addPipeline(new MyPipeline()).addPipeline(new ConsolePipeline())
+//        .setDownloader(new ImageDownloader())
+//        .thread(1)
+//        .run();
+//
+//        try {
+//            SpiderMonitor.instance().register(spider);
+//
+//        } catch (JMException e) {
+//            e.printStackTrace();
+//        }
     }
     
     @Override
     public void process(Page page) {
     	String raw = page.getRawText();
-        if (page.getUrl().regex(URL_CATEGORY).match())
+        Selectable url = page.getUrl();
+        if (url.regex(URL_CATEGORY).match())
         {
         	getAllCategory(page);
         }
-        else if(page.getUrl().regex(URL_SINGLE_CATEGORY).match())
+        else if(url.regex(URL_SINGLE_CATEGORY).match())
         {
             getPerCategoryProducts(page);
         }
-        else if(page.getUrl().regex(URL_MULTIPRICE).match())
+        else if(url.regex(URL_MULTIPRICE).match())
         {
             getProductMultiPrice(page);
         }
-        else if(page.getUrl().regex(URL_DETAIL).match())
+        else if(url.regex(URL_DETAIL).match())
         {
             getProductDetail(page);
         }
-        
     }
 
     /**
@@ -172,7 +223,7 @@ public class SinaBlogProcessor implements PageProcessor {
                            SCHEMA,URL_SINGLE_CATEGORY,timestamp,item);
 				   page.addTargetRequest(target);
 			   }
-			   break;
+			   //break;
 			}
 		}
 		page.putField("json_category",page.getJson());
