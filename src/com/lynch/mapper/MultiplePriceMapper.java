@@ -36,7 +36,7 @@ public interface MultiplePriceMapper {
     @Insert("insert into MultiplePrice(id,productCode,provinceCode,price,quantity,customerCode,customerName,isAnonymity) " +
             "values (#{id},#{productCode},#{provinceCode},#{price},#{quantity},#{customerCode},#{customerName},#{isAnonymity})")
     @Options(useGeneratedKeys=false,keyProperty="id")
-    public int insertUser(MultiplePrice price) throws Exception;
+    int insertUser(MultiplePrice price) throws Exception;
 
     /**
      *
