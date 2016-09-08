@@ -62,7 +62,7 @@ public class Main {
         {
             dao.insert(new MultiplePrice(UUID.randomUUID().toString().replace("-",""),
                     "234231","90","1200","40032",false,"customcode","lessmall"));
-               System.out.println("main");
+            System.out.println("main");
         }
         catch(Exception ex)
         {
